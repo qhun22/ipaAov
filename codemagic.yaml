@@ -8,10 +8,13 @@ workflows:
         script: |
           mkdir -p Payload/StartApp.app
           SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
-          swiftc -target arm64-apple-ios15.0 \
+          swiftc -parse-as-library \
+                 -target arm64-apple-ios15.0 \
                  -sdk "$SDK_PATH" \
                  StartApp.swift \
                  -o Payload/StartApp.app/StartApp
+
+          chmod +x Payload/StartApp.app/StartApp
 
           cat << 'EOF' > Payload/StartApp.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
@@ -24,6 +27,8 @@ workflows:
               <string>com.local.startapp</string>
               <key>CFBundleName</key>
               <string>StartApp</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
               <key>CFBundleVersion</key>
               <string>1.0</string>
               <key>CFBundleShortVersionString</key>
