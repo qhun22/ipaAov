@@ -1,0 +1,41 @@
+workflows:
+  ios-trollstore:
+    name: Build TrollStore IPA
+    instance_type: mac_mini_m1
+    max_build_duration: 10
+    scripts:
+      - name: Compile and Package IPA
+        script: |
+          mkdir -p Payload/StartApp.app
+          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          swiftc -target arm64-apple-ios15.0 \
+                 -sdk "$SDK_PATH" \
+                 StartApp.swift \
+                 -o Payload/StartApp.app/StartApp
+
+          cat << 'EOF' > Payload/StartApp.app/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>StartApp</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.local.startapp</string>
+              <key>CFBundleName</key>
+              <string>StartApp</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>LSRequiresIPhoneOS</key>
+              <true/>
+              <key>UILaunchScreen</key>
+              <dict/>
+          </dict>
+          </plist>
+          EOF
+
+          zip -r StartApp.ipa Payload
+    artifacts:
+      - StartApp.ipa
