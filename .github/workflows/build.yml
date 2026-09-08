@@ -1,0 +1,56 @@
+name: Build StartApp IPA for TrollStore
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Compile Swift and Package App
+        run: |
+          # Tao cau truc thu muc App Bundle
+          mkdir -p Payload/StartApp.app
+
+          # Bien dich file StartApp.swift ra binary arm64 cho iOS
+          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          swiftc -target arm64-apple-ios15.0 \
+                 -sdk "$SDK_PATH" \
+                 StartApp.swift \
+                 -o Payload/StartApp.app/StartApp
+
+          # Tao file Info.plist toi gian
+          cat << 'EOF' > Payload/StartApp.app/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>StartApp</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.local.startapp</string>
+              <key>CFBundleName</key>
+              <string>StartApp</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>LSRequiresIPhoneOS</key>
+              <true/>
+              <key>UILaunchScreen</key>
+              <dict/>
+          </dict>
+          </plist>
+          EOF
+
+          # Dong goi thanh file .ipa
+          zip -r StartApp.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: StartApp-TrollStore
+          path: StartApp.ipa
