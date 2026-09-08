@@ -12,9 +12,9 @@ workflows:
                  -target arm64-apple-ios15.0 \
                  -sdk "$SDK_PATH" \
                  StartApp.swift \
-                 -o Payload/StartApp.app/StartApp
+                   -o Payload/StartApp.app/qhun22
 
-          chmod +x Payload/StartApp.app/StartApp
+                 chmod +x Payload/StartApp.app/qhun22
 
           # Copy icon vao bundle ung dung
           if [ -f "AppIcon.png" ]; then
@@ -30,11 +30,13 @@ workflows:
           <plist version="1.0">
           <dict>
               <key>CFBundleExecutable</key>
-              <string>StartApp</string>
+              <string>qhun22</string>
               <key>CFBundleIdentifier</key>
-              <string>com.local.startapp</string>
+              <string>com.qhun22.app</string>
               <key>CFBundleName</key>
-              <string>StartApp</string>
+              <string>qhun22</string>
+              <key>CFBundleDisplayName</key>
+              <string>qhun22</string>
               <key>CFBundlePackageType</key>
               <string>APPL</string>
               <key>CFBundleVersion</key>
